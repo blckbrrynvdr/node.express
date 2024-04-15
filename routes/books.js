@@ -55,8 +55,7 @@ router.put('/:id',
 		res.status(404);
 		res.json('Книга не найдена')
 	}
-
-})
+});
 
 router.delete('/:id', (req, res) => {
 	const {id} = req.params;
@@ -69,7 +68,7 @@ router.delete('/:id', (req, res) => {
 		res.status(500);
 		res.json(e);
 	}
-})
+});
 
 router.get('/:id/download', (req, res) => {
 	const {id} = req.params;
@@ -82,6 +81,6 @@ router.get('/:id/download', (req, res) => {
 		res.status(404);
 		res.json('Книга не найдена');
 	}
-})
+});
 
 module.exports = router;
