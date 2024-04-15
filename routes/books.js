@@ -1,10 +1,10 @@
 const router = require('express').Router();
 
 const Books = require('../classes/books.class');
+const fileMulter = require('../middleware/file');
 
 const books = new Books();
 
-// todo вынести в middleware
 const checkRequestId = (id, res) => {
 	if (!id) {
 		res.status(400)
@@ -29,21 +29,31 @@ router.get('/:id', (req, res) => {
 	}
 });
 
-router.post('/', (req, res) => {
-	const book = books.create(req.body);
-	res.status(201);
-	res.json(book);
-});
+router.post('/',
+	fileMulter.single('fileBook'),
+	(req, res) => {
+		const book = books.create({
+			...req.body,
+			fileBook: req.file ? req.file.path : '',
+		});
+		res.status(201);
+		res.json(book);
+	});
 
-router.put('/:id', (req, res) => {
+router.put('/:id',
+	fileMulter.single('fileBook'),
+	(req, res) => {
 	const {id} = req.params;
 	checkRequestId(id, res);
 	try {
-		const book = books.update(id, req.body);
+		const book = books.update(id, {
+			...req.body,
+			fileBook: req.file ? req.file.path : '',
+		});
 		res.status(201);
 		res.json(book);
 	} catch (e) {
-		res.status('404');
+		res.status(404);
 		res.json('Книга не найдена')
 	}
 
