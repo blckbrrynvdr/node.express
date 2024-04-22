@@ -1,9 +1,6 @@
 const router = require('express').Router();
-
-const Books = require('../classes/books.class');
-const fileMulter = require('../middleware/file');
-
-const books = new Books();
+const books = require('../../store/books');
+const fileMulter = require('../../middleware/file');
 
 const checkRequestId = (id, res) => {
 	if (!id) {
