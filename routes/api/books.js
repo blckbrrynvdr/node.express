@@ -16,13 +16,8 @@ router.get('/', (req, res) => {
 router.get('/:id', (req, res) => {
 	const {id} = req.params;
 	checkRequestId(id, res);
-	try {
-		res.status(201);
-		res.json(books.getById(id));
-	} catch (e) {
-		res.status(404);
-		res.json('Книга не найдена');
-	}
+	res.status(201);
+	res.json(books.getById(id));
 });
 
 router.post('/',
@@ -41,43 +36,28 @@ router.put('/:id',
 	(req, res) => {
 	const {id} = req.params;
 	checkRequestId(id, res);
-	try {
-		const book = books.update(id, {
-			...req.body,
-			fileBook: req.file ? req.file.path : '',
-		});
-		res.status(201);
-		res.json(book);
-	} catch (e) {
-		res.status(404);
-		res.json('Книга не найдена')
-	}
+	const book = books.update(id, {
+		...req.body,
+		fileBook: req.file ? req.file.path : '',
+	});
+	res.status(201);
+	res.json(book);
 });
 
 router.delete('/:id', (req, res) => {
 	const {id} = req.params;
 	checkRequestId(id, res);
-	try {
-		books.delete(id);
-		res.status(201);
-		res.json('ok')
-	} catch (e) {
-		res.status(500);
-		res.json(e);
-	}
+	books.delete(id);
+	res.status(201);
+	res.json('ok')
 });
 
 router.get('/:id/download', (req, res) => {
 	const {id} = req.params;
 	checkRequestId(id, res);
-	try {
-		res.status(201);
-		const path = books.getById(id)?.fileBook;
-		res.download(`./${path}`)
-	} catch (e) {
-		res.status(404);
-		res.json('Книга не найдена');
-	}
+	res.status(201);
+	const path = books.getById(id)?.fileBook;
+	res.download(`./${path}`)
 });
 
 module.exports = router;
