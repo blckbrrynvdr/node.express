@@ -1,8 +1,9 @@
-const router = require('express').Router();
-const books = require('./books');
-const user = require('./user');
+const express = require('express');
+const router = express.Router();
+const api = require('./api');
+const pages = require('./pages');
 
-router.use('/books', books);
-router.use('/user', user);
+router.use('/api', express.json(), api);
+router.use('/', pages);
 
 module.exports = router;
