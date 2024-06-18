@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const books = require('../../store/books');
 const page404 = require('../../middleware/page-404');
+const redisClient = require('../../store/redis');
 
 books.create({title: '111', description: '222'})
 
@@ -27,7 +28,7 @@ router.post('/book/create', (req, res) => {
     res.redirect('/');
 });
 
-router.get('/book/:id', (req, res) => {
+router.get('/book/:id', async (req, res) => {
     const {id} = req.params;
     let book;
 
@@ -37,9 +38,12 @@ router.get('/book/:id', (req, res) => {
         res.redirect('/404');
     }
 
+    const views = await redisClient.incr(id);
+
     res.render('pages/view', {
         title: 'Просмотр книги | ' + book.title,
-        book
+        book,
+        views
     });
 });
 
