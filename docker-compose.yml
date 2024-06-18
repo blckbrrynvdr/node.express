@@ -5,7 +5,7 @@ services:
       - ./data:/data
 
   counter:
-    image: node:20.12-alpine
+    image: blckbrrynvdr/netology-counter:v1.0.0
     working_dir: /app
     ports:
       - 3001:3001
