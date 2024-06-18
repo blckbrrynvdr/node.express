@@ -41,7 +41,7 @@ router.get('/book/:id', async (req, res) => {
     const views = await redisClient.incr(id);
 
     res.render('pages/view', {
-        title: 'Просмотр книги | ' + book.title,
+        title: 'Просмотр книги | ' + book?.title,
         book,
         views
     });

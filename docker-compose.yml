@@ -5,12 +5,12 @@ services:
       - ./data:/data
 
   counter:
-    image: blckbrrynvdr/netology-counter:v1.0.0
-    working_dir: /app/counter
+    image: node:20.12-alpine
+    working_dir: /app
     ports:
       - 3001:3001
     volumes:
-      - ./counter:/app/counter
+      - ./counter:/app
     environment:
       - PORT=3001
       - REDIS_URL=redis://storage
@@ -20,11 +20,11 @@ services:
 
   library:
     image: blckbrrynvdr/netology-library:v1.0.0
-    working_dir: /app/library
+    working_dir: /app
     ports:
       - 3002:3002
     volumes:
-      - ./:/app
+      - ./library:/app
     environment:
       - PORT=3002
       - REDIS_URL=redis://storage
