@@ -1,0 +1,33 @@
+services:
+  storage:
+    image: redis
+    volumes:
+      - ./data:/data
+
+  counter:
+    image: blckbrrynvdr/netology-counter:v1.0.0
+    working_dir: /app
+    ports:
+      - 3001:3001
+    volumes:
+      - ./counter:/app
+    environment:
+      - PORT=3001
+      - REDIS_URL=redis://storage
+    command: npm run dev
+    depends_on:
+      - storage
+
+  library:
+    image: blckbrrynvdr/netology-library:v1.0.0
+    working_dir: /app
+    ports:
+      - 3002:3002
+    volumes:
+      - ./library:/app
+    environment:
+      - PORT=3002
+      - REDIS_URL=redis://storage
+    command: npm run dev
+    depends_on:
+      - storage

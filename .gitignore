@@ -1,4 +1,2 @@
-node_modules
-public/books/*
-!.gitkeep
-.idea/*
+data
+.idea
