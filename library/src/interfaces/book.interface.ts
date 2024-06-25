@@ -6,5 +6,5 @@ export interface Book {
 	fileCover: string,
 	fileName: string,
 	fileBook: string,
-	id : string,
+	_id: string,
 }
