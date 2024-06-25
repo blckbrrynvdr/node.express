@@ -1,63 +1,80 @@
 const router = require('express').Router();
-const books = require('../../store/books');
 const fileMulter = require('../../middleware/file');
+const Book = require('../../models/book');
+const {v4: uuid} = require("uuid");
 
-const checkRequestId = (id, res) => {
-	if (!id) {
-		res.status(400)
-		res.json('400 | переданы неверные параметры')
-	}
-}
 
-router.get('/', (req, res) => {
-	res.json(books.getAll());
+router.get('/', async (req, res) => {
+    try {
+        const books = await Book.find().select('-__v');
+        res.status(201).json(books);
+    } catch (e) {
+        res.status(500).json(e);
+    }
 });
 
-router.get('/:id', (req, res) => {
-	const {id} = req.params;
-	checkRequestId(id, res);
-	res.status(201);
-	res.json(books.getById(id));
+router.get('/:id', async (req, res) => {
+    const {id} = req.params;
+
+    try {
+        const book = await Book.findById(id).select('-__v');
+        if (!book) {
+            res.status(404).json('404');
+        }
+        res.status(201).json(book);
+    } catch (e) {
+        res.status(500).json(e);
+    }
 });
 
-router.post('/',
-	fileMulter.single('fileBook'),
-	(req, res) => {
-		const book = books.create({
-			...req.body,
-			fileBook: req.file ? req.file.path : '',
-		});
-		res.status(201);
-		res.json(book);
-	});
-
-router.put('/:id',
-	fileMulter.single('fileBook'),
-	(req, res) => {
-	const {id} = req.params;
-	checkRequestId(id, res);
-	const book = books.update(id, {
-		...req.body,
-		fileBook: req.file ? req.file.path : '',
-	});
-	res.status(201);
-	res.json(book);
+router.post('/', fileMulter.single('fileBook'), async (req, res) => {
+    try {
+        const newBook = new Book({
+            ...req.body, _id: uuid(), fileName: req.file ? req.file.path : '',
+        });
+        await newBook.save();
+        res.status(201).json(newBook);
+    } catch (e) {
+        res.status(500).json(e);
+    }
 });
 
-router.delete('/:id', (req, res) => {
-	const {id} = req.params;
-	checkRequestId(id, res);
-	books.delete(id);
-	res.status(201);
-	res.json('ok')
+router.put('/:id', fileMulter.single('fileBook'), async (req, res) => {
+    const {id} = req.params;
+    try {
+        const book = await Book.findByIdAndUpdate(id, {
+            ...req.body, fileName: req.file ? req.file.path : '',
+        }).select('-__v');
+        if (!book) {
+            res.status(404).json('404');
+        }
+        res.status(201).json(book);
+    } catch (e) {
+        res.status(500).json(e);
+    }
 });
 
-router.get('/:id/download', (req, res) => {
-	const {id} = req.params;
-	checkRequestId(id, res);
-	res.status(201);
-	const path = books.getById(id)?.fileBook;
-	res.download(`./${path}`)
+router.delete('/:id', async (req, res) => {
+    const {id} = req.params;
+    try {
+        await Book.deleteOne({_id: id});
+        res.status(201).json('ok');
+    } catch (e) {
+        res.status(500).json(e);
+    }
+});
+
+router.get('/:id/download', async (req, res) => {
+    const {id} = req.params;
+    try {
+        const book = await Book.findById(id).select('-__v');
+        if (!book || !book?.fileName) {
+            res.status(404).json('404');
+        }
+        res.download(`./${book?.fileName}`);
+    } catch (e) {
+        res.status(500).json(e);
+    }
 });
 
 module.exports = router;
